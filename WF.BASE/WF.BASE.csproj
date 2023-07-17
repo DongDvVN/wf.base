@@ -26,7 +26,7 @@
     <InstallUrl>https://raw.githubusercontent.com/DongDvVN/wf.base/master/published/</InstallUrl>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationRevision>3</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -64,7 +64,7 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>logo.ico</ApplicationIcon>
+    <ApplicationIcon>icon-tima.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup />
   <ItemGroup>
@@ -134,6 +134,7 @@
   <ItemGroup>
     <Content Include="DLL\EPPlus.dll" />
     <Content Include="DLL\RestSharp.dll" />
+    <Content Include="icon-tima.ico" />
     <Content Include="logo.ico" />
   </ItemGroup>
   <ItemGroup>

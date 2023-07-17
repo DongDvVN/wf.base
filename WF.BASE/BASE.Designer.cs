@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BASE));
             this.label1 = new System.Windows.Forms.Label();
             this.txtToken = new System.Windows.Forms.TextBox();
             this.btnGetData = new System.Windows.Forms.Button();
@@ -72,7 +73,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(60, 13);
             this.label2.TabIndex = 3;
-            this.label2.Text = "Version 1.0";
+            this.label2.Text = "Version 1.1";
             // 
             // label3
             // 
@@ -104,6 +105,7 @@
             this.Controls.Add(this.btnGetData);
             this.Controls.Add(this.txtToken);
             this.Controls.Add(this.label1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "BASE";
             this.Text = "Lấy dữ liệu từ Base Request";
             this.Load += new System.EventHandler(this.Form1_Load);
