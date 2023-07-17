@@ -35,6 +35,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.createdAt = new System.Windows.Forms.DateTimePicker();
+            this.loading = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
             // label1
@@ -58,7 +59,7 @@
             // btnGetData
             // 
             this.btnGetData.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnGetData.Location = new System.Drawing.Point(118, 159);
+            this.btnGetData.Location = new System.Drawing.Point(118, 205);
             this.btnGetData.Name = "btnGetData";
             this.btnGetData.Size = new System.Drawing.Size(374, 58);
             this.btnGetData.TabIndex = 2;
@@ -69,7 +70,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(450, 233);
+            this.label2.Location = new System.Drawing.Point(450, 279);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(60, 13);
             this.label2.TabIndex = 3;
@@ -94,11 +95,22 @@
             this.createdAt.Size = new System.Drawing.Size(374, 31);
             this.createdAt.TabIndex = 6;
             // 
+            // loading
+            // 
+            this.loading.Location = new System.Drawing.Point(118, 153);
+            this.loading.MarqueeAnimationSpeed = 1;
+            this.loading.Maximum = 1000;
+            this.loading.Name = "loading";
+            this.loading.Size = new System.Drawing.Size(374, 29);
+            this.loading.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.loading.TabIndex = 0;
+            // 
             // BASE
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(524, 257);
+            this.ClientSize = new System.Drawing.Size(524, 302);
+            this.Controls.Add(this.loading);
             this.Controls.Add(this.createdAt);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -122,6 +134,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.DateTimePicker createdAt;
+        private System.Windows.Forms.ProgressBar loading;
     }
 }
 
