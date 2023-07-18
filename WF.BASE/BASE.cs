@@ -42,7 +42,7 @@ namespace WF.BASE
             }
             else
             {
-                var result = new BaseService().GetAllRequest(new Models.Base.Request.GetAllRequest());
+                var result = new BaseService().GetAllRequest(new Models.Base.Request.GetAllRequest() { Token = token });
                 MessageBox.Show(result, "KẾT QUẢ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 StartLoading(true);
                 btnGetData.Enabled = true;
