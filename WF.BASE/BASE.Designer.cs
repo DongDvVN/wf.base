@@ -33,8 +33,6 @@
             this.txtToken = new System.Windows.Forms.TextBox();
             this.btnGetData = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.createdAt = new System.Windows.Forms.DateTimePicker();
             this.loading = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
@@ -59,7 +57,7 @@
             // btnGetData
             // 
             this.btnGetData.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnGetData.Location = new System.Drawing.Point(118, 205);
+            this.btnGetData.Location = new System.Drawing.Point(118, 136);
             this.btnGetData.Name = "btnGetData";
             this.btnGetData.Size = new System.Drawing.Size(374, 58);
             this.btnGetData.TabIndex = 2;
@@ -70,34 +68,15 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(450, 279);
+            this.label2.Location = new System.Drawing.Point(450, 210);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(60, 13);
             this.label2.TabIndex = 3;
-            this.label2.Text = "Version 1.1";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(13, 100);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(80, 20);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Ngày tạo";
-            // 
-            // createdAt
-            // 
-            this.createdAt.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.createdAt.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.createdAt.Location = new System.Drawing.Point(118, 91);
-            this.createdAt.Name = "createdAt";
-            this.createdAt.Size = new System.Drawing.Size(374, 31);
-            this.createdAt.TabIndex = 6;
+            this.label2.Text = "Version 1.2";
             // 
             // loading
             // 
-            this.loading.Location = new System.Drawing.Point(118, 153);
+            this.loading.Location = new System.Drawing.Point(118, 84);
             this.loading.MarqueeAnimationSpeed = 1;
             this.loading.Maximum = 1000;
             this.loading.Name = "loading";
@@ -109,10 +88,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(524, 302);
+            this.ClientSize = new System.Drawing.Size(524, 230);
             this.Controls.Add(this.loading);
-            this.Controls.Add(this.createdAt);
-            this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.btnGetData);
             this.Controls.Add(this.txtToken);
@@ -132,8 +109,6 @@
         private System.Windows.Forms.TextBox txtToken;
         private System.Windows.Forms.Button btnGetData;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.DateTimePicker createdAt;
         private System.Windows.Forms.ProgressBar loading;
     }
 }

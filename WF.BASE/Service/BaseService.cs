@@ -14,7 +14,7 @@ namespace WF.BASE.Service
 {
     public class BaseService
     {
-        public Base.Responce.GetAllRequest GetAllRequest(Base.Request.GetAllRequest entity)
+        public string GetAllRequest(Base.Request.GetAllRequest entity)
         {
             var client = new RestClient(ConfigurationSettings.AppSettings["BaseUrl"]);
             var request = new RestRequest(Constants.GET_ALL_REQUEST);
@@ -27,8 +27,9 @@ namespace WF.BASE.Service
                 var response = client.Execute<Base.Responce.GetAllRequest>(request);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    var objData = JsonConvert.DeserializeObject<Base.Responce.GetAllRequest>(response.Content);
-                    return objData;
+                    //var objData = JsonConvert.DeserializeObject<Base.Responce.GetAllRequest>(response.Content);
+                    //return objData;
+                    return response.Content;
                 }
             }
             catch (Exception ex)
