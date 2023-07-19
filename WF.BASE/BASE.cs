@@ -7,11 +7,13 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WF.BASE.Helper;
+using WF.BASE.Models;
 using WF.BASE.Service;
 
 namespace WF.BASE
@@ -35,26 +37,97 @@ namespace WF.BASE
         {
             btnGetData.Enabled = false;
             var token = txtToken.Text;
+            var page = txtPage.Text;
             if (string.IsNullOrEmpty(token))
             {
-                MessageBox.Show("Vui lòng nhập TOKEN", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Vui lòng nhập TOKEN", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 btnGetData.Enabled = true;
             }
             else
             {
-                var result = new BaseService().GetAllRequest(new Models.Base.Request.GetAllRequest() { Token = token });
-                MessageBox.Show(result, "KẾT QUẢ", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                StartLoading(true);
+                var lstDataBaseRequest = new List<Base.Responce.Request>();
+                if (!string.IsNullOrEmpty(page))
+                {
+                    var lstPage = page?.Split(',')?.Select(Int32.Parse)?.ToList();
+                    if (lstPage != null && lstPage.Count > 0)
+                    {
+                        foreach (var pageIndex in lstPage)
+                        {
+                            var result = new BaseService().GetAllRequest(new Base.Request.GetAllRequest() { Token = token, Page = pageIndex });
+                            if (result != null && result.requests != null && result.requests.Count > 0)
+                                lstDataBaseRequest.AddRange(result.requests);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Kiểm tra lại định dạng page", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        btnGetData.Enabled = true;
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < 1000; i++)
+                    {
+                        var result = new BaseService().GetAllRequest(new Base.Request.GetAllRequest() { Token = token, Page = i });
+                        if (result != null && result.requests != null && result.requests.Count > 0)
+                            lstDataBaseRequest.AddRange(result.requests);
+                    }
+                }
+
+
+                if (lstDataBaseRequest != null && lstDataBaseRequest.Count > 0)
+                {
+                    loading.Maximum = lstDataBaseRequest.Count;
+                    loading.Minimum = 0;
+                    loading.Step = 1;
+                    loading.Style = ProgressBarStyle.Continuous;
+                    var i = 0;
+                    var lstDataExcel = new List<Excel.Responce.ExportDataRequest>();
+                    foreach (var item in lstDataBaseRequest)
+                    {
+                        try
+                        {
+                            lstDataExcel.Add(new Excel.Responce.ExportDataRequest()
+                            {
+                                Id = item.id,
+                                Title = ConvertExtensions.RemoveSpecialCharacters(item.name),
+                                Content = ConvertExtensions.RemoveSpecialCharacters(item.content)
+                            });
+                            if (item.files != null && item.files.Count > 0)
+                            {
+                                var fileFolderImage = item.id;
+                                foreach (var image in item.files)
+                                {
+                                    try
+                                    {
+                                        DownloadImage(image.url, fileFolderImage, image.name);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        MessageBox.Show("StackTrace: " + ex.StackTrace + " | Message: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
+                                }
+                            }
+                            loading.Value = i++;
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("StackTrace: " + ex.StackTrace + " | Message: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    ExportExcel(lstDataExcel);
+                }
+                else
+                    MessageBox.Show("Có lỗi không mong muốn sảy ra. Vui lòng thử lại sau", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                loading.Value = lstDataBaseRequest.Count;
                 btnGetData.Enabled = true;
+                MessageBox.Show("Chạy xong dữ liệu", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
         private void StartLoading(bool start)
         {
-            loading.Maximum = 1000;
-            loading.Minimum = 0;
-            loading.Step = 1;
-            loading.Style = ProgressBarStyle.Continuous;
             for (int i = 0; i < 1000; i++)
             {
                 loading.Value = i;
@@ -64,86 +137,29 @@ namespace WF.BASE
                 loading.Value = 1000;
             }
         }
-
-        private void ExportExcel()
+        private static void DownloadImage(string url, string filePath, string fileName)
         {
-            List<string> lstHeaderLoan = new List<string> { "loai_bds", "ho_ten", "email", "sdt", "ten_cong_ty", "ma_nhan_vien", "chuc_vu", "quyen_so_huu", "tinh_tp", "quan_huyen", "phuong_xa", "dia_chi", "tieu_de", "ten_du_an", "lo_block", "so_can_ho", "ten_chung_cu", "dien_tich", "phong_ngu", "phong_tam", "do_rong_duong", "ket_cau_nha", "huong_nha", "huong_dat", "nam_o_tang", "chieu_rong", "chieu_dai", "huong_cua_chinh", "noi_that", "huong_ban_cong", "gia_tien", "mo_ta", "thuong_luong", "phi_sang_ten", "giay_to_phap_ly", "tien_ich_xung_quanh", "tien_ich_khac", "trang_thiet_bi" };
-            List<int> lstWidthLoan = new List<int> { 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20 };
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            using (WebClient client = new WebClient())
+            {
+                var pathFile = currentPathFolder + "//File//" + filePath;
+                if (!Directory.Exists(pathFile))
+                {
+                    Directory.CreateDirectory(pathFile);
+                }
+                client.DownloadFile(new Uri(url), $"{pathFile}\\{fileName}");
+            }
+        }
+        private void ExportExcel(List<Excel.Responce.ExportDataRequest> entity)
+        {
+            List<string> lstHeaderLoan = new List<string> { "Id", "Tiêu đề", "Content" };
+            List<int> lstWidthLoan = new List<int> { 30, 50, 50 };
             List<ExcelHorizontalAlignment> lstAlign = new List<ExcelHorizontalAlignment> { ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
-                                                                                           ExcelHorizontalAlignment.Left,
                                                                                            ExcelHorizontalAlignment.Left,
                                                                                            ExcelHorizontalAlignment.Left,
                                                                                            };
             List<System.Drawing.Color> lstColor = new List<System.Drawing.Color> { Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
-                                                                                   Color.Black,
                                                                                    Color.Black,
                                                                                    Color.Black,
                                                                                   };
@@ -151,7 +167,7 @@ namespace WF.BASE
             ExcelPackage package = new ExcelPackage();
             var ws = package.Workbook.Worksheets.Add("Dữ liệu");
             ws.Cells.Style.Font.Name = "Times New Roman";
-            ws.Cells.Style.Font.Size = 11;
+            ws.Cells.Style.Font.Size = 12;
             // Format All Cells
             ws.Cells.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
             // Format All Column
@@ -174,11 +190,13 @@ namespace WF.BASE
             }
             // SET VALUE
             iPosHeader++;
-            //for (int i = 0; i < entity.Count(); i++)
-            //{
-
-            //    iPosHeader++;
-            //}
+            for (int i = 0; i < entity.Count(); i++)
+            {
+                ws.Cells[iPosHeader, 1].Value = entity[i].Id;
+                ws.Cells[iPosHeader, 2].Value = entity[i].Title;
+                ws.Cells[iPosHeader, 3].Value = entity[i].Content;
+                iPosHeader++;
+            }
 
             fileContents = package.GetAsByteArray();
             string pathFile = currentPathFolder + "//FileExcel";

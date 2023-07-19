@@ -9,6 +9,11 @@ namespace WF.BASE.Helper
 {
     public class ConvertExtensions
     {
+        public static string RemoveSpecialCharacters(string value)
+        {
+            var input = Regex.Replace(value, "<.*?>", String.Empty);
+            return new string(input.Select(x => char.IsLetter(x) ? x : ' ').ToArray());
+        }
         public static string RemoveVietnameseTone(string text)
         {
             string result = text.ToLower();

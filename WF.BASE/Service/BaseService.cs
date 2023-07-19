@@ -14,22 +14,22 @@ namespace WF.BASE.Service
 {
     public class BaseService
     {
-        public string GetAllRequest(Base.Request.GetAllRequest entity)
+        public Base.Responce.GetAllRequest GetAllRequest(Base.Request.GetAllRequest entity)
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
             var client = new RestClient(ConfigurationSettings.AppSettings["BaseUrl"]);
             var request = new RestRequest(Constants.GET_ALL_REQUEST);
-            request.Method = Method.GET;
-            request.AddHeader("Accept", "application/json");
+            request.Method = Method.POST;
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
             request.AddParameter("access_token", entity.Token);
+            request.AddParameter("page", entity.Page);
             try
             {
                 var response = client.Execute<Base.Responce.GetAllRequest>(request);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    //var objData = JsonConvert.DeserializeObject<Base.Responce.GetAllRequest>(response.Content);
-                    //return objData;
-                    return response.Content;
+                    var objData = JsonConvert.DeserializeObject<Base.Responce.GetAllRequest>(response.Content);
+                    return objData;
                 }
             }
             catch (Exception ex)
