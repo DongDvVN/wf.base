@@ -66,7 +66,7 @@ namespace WF.BASE
                 }
                 else
                 {
-                    for (int i = 0; i < 1000; i++)
+                    for (int i = 0; i < 50; i++)
                     {
                         var result = new BaseService().GetAllRequest(new Base.Request.GetAllRequest() { Token = token, Page = i });
                         if (result != null && result.requests != null && result.requests.Count > 0)
